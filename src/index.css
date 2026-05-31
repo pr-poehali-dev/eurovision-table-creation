@@ -6,76 +6,50 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-
     --radius: 0.5rem;
-
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
@@ -94,408 +68,558 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
     font-family: "Oswald", sans-serif;
   }
 }
 
-/* ===== EUROVISION ROOT ===== */
-.eurovision-root {
+/* ===================== ROOT ===================== */
+.ev-root {
   min-height: 100vh;
   width: 100%;
   position: relative;
-  background: #1a0000;
+  background: #0e0000;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 12px 8px 80px;
+  padding: 10px 6px 90px;
   overflow-x: hidden;
 }
 
-.bg-overlay {
+.ev-bg {
   position: fixed;
   inset: 0;
   background:
     radial-gradient(
-      ellipse at 20% 30%,
-      rgba(160, 20, 0, 0.7) 0%,
-      transparent 60%
+      ellipse 80% 60% at 15% 25%,
+      rgba(180, 25, 0, 0.75) 0%,
+      transparent 55%
     ),
     radial-gradient(
-      ellipse at 80% 20%,
-      rgba(120, 10, 0, 0.6) 0%,
+      ellipse 60% 50% at 85% 15%,
+      rgba(130, 10, 0, 0.6) 0%,
       transparent 50%
     ),
     radial-gradient(
-      ellipse at 50% 80%,
-      rgba(80, 5, 0, 0.8) 0%,
-      transparent 60%
+      ellipse 70% 60% at 50% 90%,
+      rgba(100, 5, 0, 0.85) 0%,
+      transparent 55%
     ),
-    linear-gradient(180deg, #2a0505 0%, #0d0000 100%);
+    radial-gradient(
+      ellipse 100% 100% at 50% 50%,
+      rgba(60, 0, 0, 0.5) 0%,
+      transparent 80%
+    ),
+    linear-gradient(180deg, #1c0202 0%, #080000 100%);
   z-index: 0;
 }
 
-/* ===== BOARD ===== */
-.board-container {
+/* ===================== BOARD ===================== */
+.ev-board {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 960px;
+  max-width: 980px;
 }
 
-.board-header {
+.ev-header {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.header-title {
+.ev-header-sub {
   font-family: "Oswald", sans-serif;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 400;
-  letter-spacing: 4px;
-  color: rgba(255, 220, 180, 0.6);
+  letter-spacing: 5px;
+  color: rgba(255, 210, 160, 0.5);
   text-transform: uppercase;
 }
 
-.header-year {
+.ev-header-title {
   font-family: "Oswald", sans-serif;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 6px;
-  color: rgba(255, 220, 180, 0.9);
-  text-shadow: 0 0 20px rgba(255, 100, 0, 0.5);
+  letter-spacing: 8px;
+  color: rgba(255, 220, 170, 0.9);
+  text-shadow:
+    0 0 24px rgba(255, 80, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-/* ===== COLUMNS ===== */
-.board-columns {
+/* ===================== COLUMNS ===================== */
+.ev-columns {
   display: grid;
-  grid-template-columns: 1fr 60px 1fr;
-  gap: 6px;
+  grid-template-columns: 1fr 52px 1fr;
+  gap: 4px;
   align-items: start;
 }
 
-.board-col {
+.ev-col {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.board-center {
+.ev-divider {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: 40px;
+  padding-top: 50px;
 }
 
-.center-heart {
-  font-size: 48px;
-  filter: drop-shadow(0 0 20px rgba(255, 50, 50, 0.8));
-  animation: heartbeat 2s ease-in-out infinite;
+.ev-heart-center {
+  font-size: 52px;
+  color: #cc1100;
+  text-shadow:
+    0 0 30px rgba(255, 50, 0, 0.9),
+    0 0 60px rgba(255, 30, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.8);
+  animation: ev-pulse 2.2s ease-in-out infinite;
+  line-height: 1;
 }
 
-@keyframes heartbeat {
+@keyframes ev-pulse {
   0%,
   100% {
     transform: scale(1);
+    text-shadow:
+      0 0 30px rgba(255, 50, 0, 0.9),
+      0 0 60px rgba(255, 30, 0, 0.5);
   }
   50% {
     transform: scale(1.12);
+    text-shadow:
+      0 0 50px rgba(255, 80, 0, 1),
+      0 0 100px rgba(255, 50, 0, 0.7);
   }
 }
 
-/* ===== COUNTRY ROW ===== */
-.country-row {
+/* ===================== ROW ===================== */
+.ev-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0;
   background: linear-gradient(
     90deg,
-    rgba(255, 245, 220, 0.92) 0%,
-    rgba(240, 225, 190, 0.88) 70%,
-    rgba(220, 200, 160, 0.82) 100%
+    rgba(255, 248, 225, 0.94) 0%,
+    rgba(248, 235, 200, 0.91) 60%,
+    rgba(235, 215, 175, 0.86) 100%
   );
-  border-radius: 20px;
-  padding: 3px 10px 3px 3px;
+  border-radius: 18px;
+  padding: 2px 10px 2px 2px;
   cursor: default;
-  border: 1px solid rgba(255, 200, 100, 0.3);
+  border: 1px solid rgba(200, 170, 100, 0.35);
   box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
     inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-height: 30px;
   user-select: none;
-  min-height: 32px;
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
-.country-row.votable {
+.ev-row--votable {
   cursor: pointer;
-  border-color: rgba(255, 200, 50, 0.5);
+  border-color: rgba(220, 170, 60, 0.5);
 }
 
-.country-row.votable:hover {
+.ev-row--votable:hover {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 230, 0.98) 0%,
-    rgba(255, 245, 200, 0.95) 100%
+    rgba(255, 255, 235, 0.99) 0%,
+    rgba(255, 248, 210, 0.97) 100%
   );
   box-shadow:
-    0 4px 16px rgba(255, 180, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transform: translateX(2px) scale(1.01);
+    0 4px 18px rgba(255, 200, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transform: translateX(3px) scale(1.012);
 }
 
-.country-row.voted {
-  opacity: 0.55;
-  background: linear-gradient(
-    90deg,
-    rgba(200, 190, 170, 0.7) 0%,
-    rgba(190, 180, 160, 0.65) 100%
-  );
-}
-
-.country-row.self-country {
-  opacity: 0.4;
+.ev-row--self {
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
-.country-row.row-flash {
+.ev-row--flash {
   background: linear-gradient(
     90deg,
-    rgba(255, 230, 100, 0.98) 0%,
-    rgba(255, 200, 50, 0.95) 100%
+    rgba(255, 240, 80, 0.98) 0%,
+    rgba(255, 210, 30, 0.96) 100%
   ) !important;
   box-shadow:
-    0 0 30px rgba(255, 200, 0, 0.8),
+    0 0 32px rgba(255, 220, 0, 0.85),
     inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-  transform: scale(1.03) !important;
+  transform: scale(1.025) !important;
 }
 
-.row-flag {
-  font-size: 20px;
-  width: 28px;
-  height: 28px;
+/* ===================== FLAG WRAP ===================== */
+.ev-flag-wrap {
+  position: relative;
+  width: 30px;
+  height: 26px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  margin-right: 5px;
 }
 
-.row-name {
+.ev-flag {
+  font-size: 20px;
+  line-height: 1;
+  display: block;
+}
+
+.ev-flag-wrap--wave .ev-flag {
+  animation: ev-wave 2.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes ev-wave {
+  0%,
+  100% {
+    transform: rotate(-4deg) scale(1);
+  }
+  25% {
+    transform: rotate(4deg) scale(1.08);
+  }
+  50% {
+    transform: rotate(-3deg) scale(1.04);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.08);
+  }
+}
+
+/* ===================== BADGE ON FLAG ===================== */
+.ev-badge-on-flag {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(190, 10, 0, 0.93);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid rgba(255, 100, 80, 0.6);
+  box-shadow: 0 0 10px rgba(255, 50, 0, 0.8);
+  animation: ev-badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes ev-badge-pop {
+  0% {
+    transform: scale(0) rotate(-20deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.ev-badge-heart {
+  font-size: 9px;
+  color: rgba(255, 180, 160, 0.9);
+  line-height: 1;
+}
+
+.ev-badge-num {
+  font-family: "Oswald", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+/* ===================== NAME & POINTS ===================== */
+.ev-name {
   flex: 1;
   font-family: "Oswald", sans-serif;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 1px;
-  color: #2a0000;
+  letter-spacing: 1.2px;
+  color: #1a0000;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.row-points {
+.ev-points {
   font-family: "Oswald", sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
-  color: #5a0000;
-  min-width: 24px;
+  color: #4a0000;
+  min-width: 26px;
   text-align: right;
+  letter-spacing: -0.5px;
 }
 
-/* ===== VOTER BAR ===== */
-.voter-bar {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 245, 220, 0.95) 0%,
-    rgba(240, 220, 180, 0.9) 100%
-  );
-  border-radius: 28px;
-  padding: 6px 16px 6px 8px;
-  border: 2px solid rgba(255, 200, 100, 0.5);
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  min-height: 48px;
-}
-
-.voter-votes {
-  display: flex;
-  gap: 3px;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
-.vote-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  background: rgba(180, 20, 0, 0.8);
-  border-radius: 12px;
-  padding: 2px 5px;
-  font-size: 10px;
-}
-
-.vote-badge.vote-next {
-  background: rgba(220, 30, 0, 0.95);
-  box-shadow: 0 0 8px rgba(255, 50, 0, 0.6);
-  transform: scale(1.15);
-}
-
-.vote-heart {
-  font-size: 10px;
-}
-.vote-num {
-  font-family: "Oswald", sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: white;
-}
-
-.voter-flag {
-  font-size: 28px;
-}
-
-.voter-name {
-  font-family: "Oswald", sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #2a0000;
-}
-
-.voter-done {
-  font-family: "Oswald", sans-serif;
-  font-size: 11px;
-  color: rgba(100, 0, 0, 0.7);
-  letter-spacing: 1px;
-}
-
-/* ===== VOTER SWITCHER ===== */
-.voter-switcher {
-  margin-top: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.switcher-label {
-  font-family: "Oswald", sans-serif;
-  font-size: 11px;
-  letter-spacing: 1px;
-  color: rgba(255, 200, 150, 0.7);
-  flex-shrink: 0;
-}
-
-.switcher-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.switcher-btn {
-  font-size: 18px;
-  padding: 2px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  background: transparent;
-  transition: all 0.2s;
-  line-height: 1;
-}
-
-.switcher-btn:hover {
-  transform: scale(1.2);
-}
-
-.switcher-btn.active {
-  border-color: rgba(255, 200, 50, 0.9);
-  background: rgba(255, 200, 50, 0.15);
-  box-shadow: 0 0 8px rgba(255, 200, 0, 0.5);
-}
-
-/* ===== FLYING HEART ===== */
-.flying-heart {
+/* ===================== FLYING BADGE ===================== */
+.ev-flying {
   position: fixed;
   z-index: 9999;
   pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: ev-fly 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translate(-50%, -50%);
-  animation: fly-to-target 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-@keyframes fly-to-target {
+@keyframes ev-fly {
   0% {
-    transform: translate(-50%, -50%) scale(1.5);
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 1;
+    offset-path: none;
+  }
+  20% {
+    transform: translate(
+        calc(-50% + var(--dx) * 0.05),
+        calc(-50% + var(--dy) * 0.05 - 50px)
+      )
+      scale(2);
     opacity: 1;
   }
-  30% {
-    transform: translate(
-        calc(-50% + var(--to-x) * 0.1),
-        calc(-50% + var(--to-y) * 0.1 - 40px)
-      )
-      scale(1.8);
+  85% {
     opacity: 1;
   }
   100% {
-    transform: translate(calc(-50% + var(--to-x)), calc(-50% + var(--to-y)))
-      scale(0.8);
-    opacity: 0.9;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+      scale(0.9);
+    opacity: 0;
   }
 }
 
-.heart-icon {
-  font-size: 32px;
-  filter: drop-shadow(0 0 12px rgba(255, 50, 50, 1));
-}
-.heart-pts {
-  font-family: "Oswald", sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
-  margin-top: -4px;
+.ev-flying-heart {
+  font-size: 36px;
+  color: #dd1100;
+  text-shadow:
+    0 0 20px rgba(255, 60, 0, 1),
+    0 0 40px rgba(255, 30, 0, 0.7);
+  line-height: 1;
 }
 
-/* ===== ADMIN BUTTON ===== */
-.admin-btn {
+.ev-flying-num {
+  font-family: "Oswald", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  margin-top: -4px;
+  line-height: 1;
+}
+
+/* ===================== VOTER BAR ===================== */
+.ev-voter-bar {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 248, 225, 0.96) 0%,
+    rgba(245, 228, 188, 0.92) 100%
+  );
+  border-radius: 28px;
+  padding: 5px 14px 5px 6px;
+  border: 2px solid rgba(200, 165, 80, 0.45);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  min-height: 50px;
+}
+
+.ev-voter-hearts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+  flex: 1;
+}
+
+.ev-heart-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 28px;
+  height: 28px;
+}
+
+.ev-hb-heart {
+  font-size: 24px;
+  color: #bb0a00;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ev-hb-num {
+  position: relative;
+  z-index: 1;
+  font-family: "Oswald", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  margin-top: 2px;
+}
+
+.ev-heart-badge--next {
+  transform: scale(1.25);
+  filter: drop-shadow(0 0 6px rgba(255, 60, 0, 0.8));
+  z-index: 1;
+}
+
+.ev-heart-badge--next .ev-hb-heart {
+  color: #ee1100;
+  text-shadow: 0 0 10px rgba(255, 80, 0, 0.9);
+}
+
+.ev-voter-flag-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  border: 1.5px solid rgba(180, 130, 60, 0.4);
+  flex-shrink: 0;
+}
+
+.ev-voter-flag {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.ev-voter-name {
+  font-family: "Oswald", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #1a0000;
+  white-space: nowrap;
+}
+
+.ev-done-label {
+  font-family: "Oswald", sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(100, 30, 0, 0.7);
+}
+
+/* ===================== SWITCHER ===================== */
+.ev-switcher {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ev-switcher-label {
+  font-family: "Oswald", sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(255, 200, 140, 0.6);
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.ev-switcher-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.ev-sflag {
+  position: relative;
+  font-size: 20px;
+  padding: 2px 3px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.15s;
+}
+
+.ev-sflag:hover {
+  transform: scale(1.2);
+}
+
+.ev-sflag--active {
+  border-color: rgba(255, 200, 50, 0.85);
+  background: rgba(255, 200, 50, 0.12);
+  box-shadow: 0 0 8px rgba(255, 200, 0, 0.45);
+}
+
+.ev-sflag-done {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 9px;
+  background: #22aa44;
+  color: white;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ===================== ADMIN BTN ===================== */
+.ev-admin-btn {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
+  bottom: 14px;
+  right: 14px;
   z-index: 100;
-  background: rgba(60, 10, 0, 0.85);
-  border: 1px solid rgba(255, 150, 50, 0.4);
-  color: rgba(255, 200, 150, 0.9);
+  background: rgba(40, 5, 0, 0.88);
+  border: 1px solid rgba(255, 140, 50, 0.35);
+  color: rgba(255, 195, 140, 0.9);
   font-family: "Oswald", sans-serif;
   font-size: 13px;
   letter-spacing: 1px;
-  padding: 8px 16px;
+  padding: 7px 16px;
   border-radius: 20px;
   cursor: pointer;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
   transition: all 0.2s;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
 }
 
-.admin-btn:hover {
-  background: rgba(100, 20, 0, 0.9);
-  border-color: rgba(255, 200, 50, 0.6);
-  box-shadow: 0 4px 20px rgba(255, 100, 0, 0.3);
+.ev-admin-btn:hover {
+  background: rgba(90, 15, 0, 0.92);
+  border-color: rgba(255, 190, 50, 0.55);
+  box-shadow: 0 4px 22px rgba(255, 90, 0, 0.28);
 }
 
-/* ===== ADMIN PANEL ===== */
+/* ===================== ADMIN PANEL ===================== */
 .admin-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.72);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -505,15 +629,15 @@
 }
 
 .admin-panel {
-  background: linear-gradient(135deg, #1e0a00 0%, #120500 100%);
-  border: 1px solid rgba(255, 150, 50, 0.3);
+  background: linear-gradient(135deg, #1a0800 0%, #0e0300 100%);
+  border: 1px solid rgba(255, 140, 50, 0.28);
   border-radius: 16px;
   width: 100%;
   max-width: 480px;
-  max-height: 80vh;
+  max-height: 82vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.85);
   overflow: hidden;
 }
 
@@ -521,172 +645,173 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 150, 50, 0.2);
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 140, 50, 0.18);
 }
 
 .admin-title {
   font-family: "Oswald", sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 2px;
-  color: rgba(255, 200, 150, 0.9);
+  color: rgba(255, 195, 140, 0.9);
 }
 
 .admin-close {
-  color: rgba(255, 150, 100, 0.7);
+  color: rgba(255, 140, 100, 0.65);
   background: none;
   border: none;
   font-size: 18px;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 3px 8px;
   border-radius: 6px;
   transition: all 0.2s;
 }
 
 .admin-close:hover {
-  color: white;
-  background: rgba(255, 50, 0, 0.3);
+  color: #fff;
+  background: rgba(255, 50, 0, 0.28);
 }
 
 .admin-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(255, 150, 50, 0.2);
+  border-bottom: 1px solid rgba(255, 140, 50, 0.18);
 }
 
 .admin-tab {
   flex: 1;
-  padding: 10px;
+  padding: 9px;
   background: none;
   border: none;
   font-family: "Oswald", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 1px;
-  color: rgba(255, 180, 120, 0.5);
+  color: rgba(255, 170, 110, 0.45);
   cursor: pointer;
   transition: all 0.2s;
   border-bottom: 2px solid transparent;
 }
 
 .admin-tab.active {
-  color: rgba(255, 200, 150, 0.95);
-  border-bottom-color: rgba(255, 150, 50, 0.8);
+  color: rgba(255, 200, 145, 0.95);
+  border-bottom-color: rgba(255, 140, 50, 0.75);
 }
 
 .admin-tab:hover {
-  color: rgba(255, 200, 150, 0.8);
+  color: rgba(255, 195, 140, 0.78);
 }
 
 .admin-body {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 20px;
+  padding: 14px 18px;
 }
 
 .admin-info {
-  font-size: 13px;
-  color: rgba(255, 180, 120, 0.7);
-  margin-bottom: 12px;
-  line-height: 1.6;
+  font-size: 12px;
+  color: rgba(255, 170, 110, 0.7);
+  margin-bottom: 10px;
+  line-height: 1.7;
 }
 
 .admin-info strong {
-  color: rgba(255, 220, 160, 0.95);
+  color: rgba(255, 215, 155, 0.95);
 }
 
 .scores-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   max-height: 300px;
   overflow-y: auto;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .score-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
+  gap: 7px;
+  padding: 3px 8px;
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
+  border-radius: 7px;
 }
 
 .score-flag {
-  font-size: 16px;
+  font-size: 15px;
 }
+
 .score-name {
   flex: 1;
-  font-size: 12px;
-  color: rgba(255, 200, 150, 0.8);
+  font-size: 11px;
+  color: rgba(255, 195, 140, 0.78);
   font-family: "Oswald", sans-serif;
   letter-spacing: 0.5px;
 }
 
 .score-input {
-  width: 60px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 150, 50, 0.3);
-  border-radius: 6px;
-  padding: 2px 8px;
-  color: white;
+  width: 58px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 140, 50, 0.28);
+  border-radius: 5px;
+  padding: 2px 7px;
+  color: #fff;
   font-family: "Oswald", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   text-align: right;
 }
 
 .reset-btn {
   width: 100%;
-  padding: 10px;
-  background: rgba(180, 20, 0, 0.5);
-  border: 1px solid rgba(255, 80, 50, 0.4);
-  border-radius: 10px;
-  color: rgba(255, 200, 180, 0.9);
+  padding: 9px;
+  background: rgba(160, 15, 0, 0.48);
+  border: 1px solid rgba(255, 70, 45, 0.38);
+  border-radius: 9px;
+  color: rgba(255, 190, 170, 0.9);
   font-family: "Oswald", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .reset-btn:hover {
-  background: rgba(220, 30, 0, 0.7);
-  border-color: rgba(255, 100, 50, 0.6);
+  background: rgba(210, 28, 0, 0.65);
+  border-color: rgba(255, 90, 45, 0.55);
 }
 
 .add-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 7px;
+  margin-bottom: 10px;
 }
 
 .add-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 150, 50, 0.3);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: white;
+  background: rgba(255, 255, 255, 0.065);
+  border: 1px solid rgba(255, 140, 50, 0.28);
+  border-radius: 7px;
+  padding: 7px 11px;
+  color: #fff;
   font-family: "Oswald", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .add-input::placeholder {
-  color: rgba(255, 180, 120, 0.4);
+  color: rgba(255, 170, 110, 0.38);
 }
 .add-input:focus {
   outline: none;
-  border-color: rgba(255, 180, 80, 0.6);
+  border-color: rgba(255, 175, 75, 0.55);
 }
 
 .add-btn {
-  padding: 8px 14px;
-  background: rgba(150, 30, 0, 0.7);
-  border: 1px solid rgba(255, 100, 50, 0.4);
-  border-radius: 8px;
-  color: rgba(255, 200, 150, 0.9);
+  padding: 7px 13px;
+  background: rgba(130, 25, 0, 0.68);
+  border: 1px solid rgba(255, 90, 45, 0.38);
+  border-radius: 7px;
+  color: rgba(255, 195, 140, 0.9);
   font-family: "Oswald", sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s;
@@ -694,14 +819,14 @@
 }
 
 .add-btn:hover {
-  background: rgba(200, 40, 0, 0.8);
+  background: rgba(185, 35, 0, 0.78);
 }
 
 .list-items {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-height: 350px;
+  gap: 3px;
+  max-height: 340px;
   overflow-y: auto;
 }
 
@@ -709,45 +834,44 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 5px 9px;
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
-  font-size: 13px;
-  color: rgba(255, 200, 150, 0.8);
+  border-radius: 7px;
+  font-size: 12px;
+  color: rgba(255, 195, 140, 0.78);
   font-family: "Oswald", sans-serif;
 }
 
 .remove-btn {
   background: none;
   border: none;
-  color: rgba(255, 100, 80, 0.5);
+  color: rgba(255, 90, 70, 0.48);
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 1px 5px;
   border-radius: 4px;
   transition: all 0.2s;
 }
 
 .remove-btn:hover {
-  color: rgba(255, 80, 50, 1);
-  background: rgba(255, 50, 0, 0.15);
+  color: rgba(255, 70, 45, 1);
+  background: rgba(255, 45, 0, 0.13);
 }
 
 .done-badge {
-  color: rgba(100, 255, 100, 0.7);
-  font-size: 11px;
+  color: rgba(80, 220, 80, 0.7);
+  font-size: 10px;
 }
 
-/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
   width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 150, 50, 0.3);
+  background: rgba(255, 140, 50, 0.28);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 150, 50, 0.5);
+  background: rgba(255, 140, 50, 0.48);
 }

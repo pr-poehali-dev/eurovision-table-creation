@@ -1,9 +1,9 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import AdminPanel from "./AdminPanel";
 
 const VOTE_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12];
 
-const FLAG_EMOJIS: Record<string, string> = {
+export const FLAG_EMOJIS: Record<string, string> = {
   "Albania": "🇦🇱", "Andorra": "🇦🇩", "Armenia": "🇦🇲", "Australia": "🇦🇺",
   "Austria": "🇦🇹", "Azerbaijan": "🇦🇿", "Belarus": "🇧🇾", "Belgium": "🇧🇪",
   "Bosnia": "🇧🇦", "Bulgaria": "🇧🇬", "Croatia": "🇭🇷", "Cyprus": "🇨🇾",
@@ -32,220 +32,293 @@ export interface Voter {
   currentVoteIndex: number;
 }
 
-interface FlyingHeart {
+interface FlyingBadge {
   id: string;
   points: number;
-  targetId: string;
   fromX: number;
   fromY: number;
   toX: number;
   toY: number;
-  active: boolean;
 }
 
-const DEFAULT_COUNTRIES: Country[] = [
-  "Albania","Armenia","Australia","Austria","Azerbaijan","Belgium","Bulgaria",
-  "Croatia","Cyprus","Czech Republic","Denmark","Estonia","Finland","France",
-  "Georgia","Germany","Greece","Hungary","Iceland","Ireland","Israel","Italy",
-  "Latvia","Lithuania","Malta","Moldova","Netherlands","Norway","Poland",
-  "Portugal","Romania","Serbia","Slovenia","Spain","Sweden","Switzerland",
-  "Ukraine","United Kingdom"
-].map(name => ({ id: name, name, points: 0, receivedFrom: [] }));
+interface PointBadge {
+  countryId: string;
+  points: number;
+}
 
-const DEFAULT_VOTERS: Voter[] = [
+const DEFAULT_NAMES = [
   "Albania","Armenia","Australia","Austria","Azerbaijan","Belgium","Bulgaria",
   "Croatia","Cyprus","Czech Republic","Denmark","Estonia","Finland","France",
   "Georgia","Germany","Greece","Hungary","Iceland","Ireland","Israel","Italy",
   "Latvia","Lithuania","Malta","Moldova","Netherlands","Norway","Poland",
   "Portugal","Romania","Serbia","Slovenia","Spain","Sweden","Switzerland",
   "Ukraine","United Kingdom"
-].map(name => ({
-  id: name, name,
-  votesGiven: [],
-  currentVoteIndex: 0,
-}));
+];
+
+const makeCountries = (): Country[] =>
+  DEFAULT_NAMES.map(name => ({ id: name, name, points: 0, receivedFrom: [] }));
+
+const makeVoters = (): Voter[] =>
+  DEFAULT_NAMES.map(name => ({ id: name, name, votesGiven: [], currentVoteIndex: 0 }));
 
 export default function EurovisionBoard() {
-  const [countries, setCountries] = useState<Country[]>(DEFAULT_COUNTRIES);
-  const [voters, setVoters] = useState<Voter[]>(DEFAULT_VOTERS);
-  const [currentVoter, setCurrentVoter] = useState<Voter>(voters[0]);
+  const [countries, setCountries] = useState<Country[]>(makeCountries());
+  const [voters, setVoters] = useState<Voter[]>(makeVoters());
+  const [currentVoter, setCurrentVoter] = useState<Voter>(() => makeVoters()[0]);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [flyingHeart, setFlyingHeart] = useState<FlyingHeart | null>(null);
-  const [animatingRow, setAnimatingRow] = useState<string | null>(null);
+  const [flyingBadge, setFlyingBadge] = useState<FlyingBadge | null>(null);
+  const [pointBadges, setPointBadges] = useState<PointBadge[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [flashRowId, setFlashRowId] = useState<string | null>(null);
+
   const rowRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const heartButtonRef = useRef<HTMLDivElement | null>(null);
-  const tableRef = useRef<HTMLDivElement | null>(null);
+  const prevPositions = useRef<Record<string, DOMRect>>({});
+  const badgeSourceRef = useRef<HTMLDivElement | null>(null);
 
-  const sortedCountries = [...countries].sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
-
-  const leftCol = sortedCountries.slice(0, Math.ceil(sortedCountries.length / 2));
-  const rightCol = sortedCountries.slice(Math.ceil(sortedCountries.length / 2));
-
-  const currentPoints = VOTE_ORDER[currentVoter.currentVoteIndex];
+  const sorted = [...countries].sort((a, b) => b.points - a.points || a.name.localeCompare(b.name));
+  const half = Math.ceil(sorted.length / 2);
+  const leftCol = sorted.slice(0, half);
+  const rightCol = sorted.slice(half);
   const remainingVotes = VOTE_ORDER.slice(currentVoter.currentVoteIndex);
 
-  const handleVote = useCallback((targetCountryId: string) => {
-    if (isAnimating) return;
-    if (targetCountryId === currentVoter.id) return;
-    if (currentVoter.votesGiven.includes(targetCountryId)) return;
-    if (currentVoter.currentVoteIndex >= VOTE_ORDER.length) return;
+  const canVoteFor = useCallback((id: string) => {
+    if (isAnimating) return false;
+    if (id === currentVoter.id) return false;
+    if (currentVoter.votesGiven.includes(id)) return false;
+    if (currentVoter.currentVoteIndex >= VOTE_ORDER.length) return false;
+    return true;
+  }, [isAnimating, currentVoter]);
+
+  const snapshotPositions = () => {
+    const snap: Record<string, DOMRect> = {};
+    for (const [id, el] of Object.entries(rowRefs.current)) {
+      if (el) snap[id] = el.getBoundingClientRect();
+    }
+    prevPositions.current = snap;
+  };
+
+  const runFlipAnimation = () => {
+    for (const [id, el] of Object.entries(rowRefs.current)) {
+      if (!el) continue;
+      const prev = prevPositions.current[id];
+      if (!prev) continue;
+      const curr = el.getBoundingClientRect();
+      const dx = prev.left - curr.left;
+      const dy = prev.top - curr.top;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
+
+      el.style.transition = "none";
+      el.style.transform = `translate(${dx}px, ${dy}px)`;
+      el.style.zIndex = "20";
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.transition = "transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+          el.style.transform = "translate(0,0)";
+          setTimeout(() => {
+            if (el) {
+              el.style.transition = "";
+              el.style.transform = "";
+              el.style.zIndex = "";
+            }
+          }, 720);
+        });
+      });
+    }
+  };
+
+  const handleVote = useCallback((targetId: string) => {
+    if (!canVoteFor(targetId)) return;
 
     const pts = VOTE_ORDER[currentVoter.currentVoteIndex];
+    const targetEl = rowRefs.current[targetId];
+    const srcEl = badgeSourceRef.current;
 
-    const targetRow = rowRefs.current[targetCountryId];
-    const sourceEl = heartButtonRef.current;
-    const tableEl = tableRef.current;
-
-    if (!targetRow || !sourceEl || !tableEl) {
-      applyVote(targetCountryId, pts);
+    if (!targetEl || !srcEl) {
+      doApplyVote(targetId, pts, currentVoter);
       return;
     }
 
     setIsAnimating(true);
+    const srcRect = srcEl.getBoundingClientRect();
+    const tgtRect = targetEl.getBoundingClientRect();
 
-    const srcRect = sourceEl.getBoundingClientRect();
-    const tgtRect = targetRow.getBoundingClientRect();
-
-    const fromX = srcRect.left + srcRect.width / 2;
-    const fromY = srcRect.top + srcRect.height / 2;
-    const toX = tgtRect.left + 30;
-    const toY = tgtRect.top + tgtRect.height / 2;
-
-    const heartId = `heart-${Date.now()}`;
-    setFlyingHeart({ id: heartId, points: pts, targetId: targetCountryId, fromX, fromY, toX, toY, active: true });
+    setFlyingBadge({
+      id: `fly-${Date.now()}`,
+      points: pts,
+      fromX: srcRect.left + srcRect.width / 2,
+      fromY: srcRect.top + srcRect.height / 2,
+      toX: tgtRect.left + 14,
+      toY: tgtRect.top + tgtRect.height / 2,
+    });
 
     setTimeout(() => {
-      setFlyingHeart(null);
-      setAnimatingRow(targetCountryId);
-      applyVote(targetCountryId, pts);
-      setTimeout(() => {
-        setAnimatingRow(null);
-        setIsAnimating(false);
-      }, 800);
-    }, 900);
-  }, [isAnimating, currentVoter]);
+      setFlyingBadge(null);
+      setFlashRowId(targetId);
 
-  const applyVote = (targetCountryId: string, pts: number) => {
-    setCountries(prev =>
-      prev.map(c =>
-        c.id === targetCountryId
+      setPointBadges(prev => {
+        const without = prev.filter(b => b.countryId !== targetId);
+        return [...without, { countryId: targetId, points: pts }];
+      });
+
+      snapshotPositions();
+
+      const updatedVoter: Voter = {
+        ...currentVoter,
+        votesGiven: [...currentVoter.votesGiven, targetId],
+        currentVoteIndex: currentVoter.currentVoteIndex + 1,
+      };
+
+      setCountries(prev =>
+        prev.map(c => c.id === targetId
           ? { ...c, points: c.points + pts, receivedFrom: [...c.receivedFrom, currentVoter.id] }
           : c
+        )
+      );
+      setVoters(prev => prev.map(v => v.id === currentVoter.id ? updatedVoter : v));
+      setCurrentVoter(updatedVoter);
+
+      setTimeout(runFlipAnimation, 20);
+
+      setTimeout(() => {
+        setFlashRowId(null);
+        setIsAnimating(false);
+      }, 800);
+    }, 950);
+  }, [canVoteFor, currentVoter]);
+
+  const doApplyVote = (targetId: string, pts: number, voter: Voter) => {
+    setCountries(prev =>
+      prev.map(c => c.id === targetId
+        ? { ...c, points: c.points + pts, receivedFrom: [...c.receivedFrom, voter.id] }
+        : c
       )
     );
-
-    const updatedVoter: Voter = {
-      ...currentVoter,
-      votesGiven: [...currentVoter.votesGiven, targetCountryId],
-      currentVoteIndex: currentVoter.currentVoteIndex + 1,
+    const updated: Voter = {
+      ...voter,
+      votesGiven: [...voter.votesGiven, targetId],
+      currentVoteIndex: voter.currentVoteIndex + 1,
     };
-
-    setVoters(prev => prev.map(v => v.id === currentVoter.id ? updatedVoter : v));
-    setCurrentVoter(updatedVoter);
+    setVoters(prev => prev.map(v => v.id === voter.id ? updated : v));
+    setCurrentVoter(updated);
   };
 
-  const canVoteFor = (countryId: string) => {
-    if (isAnimating) return false;
-    if (countryId === currentVoter.id) return false;
-    if (currentVoter.votesGiven.includes(countryId)) return false;
-    if (currentVoter.currentVoteIndex >= VOTE_ORDER.length) return false;
-    return true;
+  const switchVoter = (voter: Voter) => {
+    setPointBadges([]);
+    setCurrentVoter(voter);
   };
 
-  const CountryRow = ({ country }: { country: Country }) => {
+  const getBadge = (countryId: string) =>
+    pointBadges.find(b => b.countryId === countryId);
+
+  const CountryRow = ({ country, rank }: { country: Country; rank: number }) => {
     const votable = canVoteFor(country.id);
-    const alreadyVoted = currentVoter.votesGiven.includes(country.id);
-    const isAnimRow = animatingRow === country.id;
+    const isSelf = country.id === currentVoter.id;
+    const badge = getBadge(country.id);
+    const isTop3 = rank < 3 && country.points > 0;
+    const isFlash = flashRowId === country.id;
 
     return (
       <div
         ref={el => { rowRefs.current[country.id] = el; }}
+        className={[
+          "ev-row",
+          votable ? "ev-row--votable" : "",
+          isSelf ? "ev-row--self" : "",
+          isFlash ? "ev-row--flash" : "",
+        ].join(" ")}
         onClick={() => votable && handleVote(country.id)}
-        className={`country-row ${votable ? "votable" : ""} ${alreadyVoted ? "voted" : ""} ${isAnimRow ? "row-flash" : ""} ${country.id === currentVoter.id ? "self-country" : ""}`}
-        style={{ transition: "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)" }}
       >
-        <div className="row-flag">
-          {FLAG_EMOJIS[country.name] || "🏳️"}
+        <div className={`ev-flag-wrap ${isTop3 ? "ev-flag-wrap--wave" : ""}`}>
+          {badge && (
+            <div className="ev-badge-on-flag">
+              <span className="ev-badge-heart">❤</span>
+              <span className="ev-badge-num">{badge.points}</span>
+            </div>
+          )}
+          <span className="ev-flag">{FLAG_EMOJIS[country.name] || "🏳️"}</span>
         </div>
-        <div className="row-name">{country.name.toUpperCase()}</div>
-        <div className="row-points">{country.points}</div>
+        <span className="ev-name">{country.name.toUpperCase()}</span>
+        <span className="ev-points">{country.points}</span>
       </div>
     );
   };
 
   return (
-    <div className="eurovision-root">
-      <div className="bg-overlay" />
+    <div className="ev-root">
+      <div className="ev-bg" />
 
-      {flyingHeart && (
+      {flyingBadge && (
         <div
-          className="flying-heart"
+          className="ev-flying"
           style={{
-            left: flyingHeart.fromX,
-            top: flyingHeart.fromY,
-            "--to-x": `${flyingHeart.toX - flyingHeart.fromX}px`,
-            "--to-y": `${flyingHeart.toY - flyingHeart.fromY}px`,
+            left: flyingBadge.fromX,
+            top: flyingBadge.fromY,
+            "--dx": `${flyingBadge.toX - flyingBadge.fromX}px`,
+            "--dy": `${flyingBadge.toY - flyingBadge.fromY}px`,
           } as React.CSSProperties}
         >
-          <span className="heart-icon">❤️</span>
-          <span className="heart-pts">{flyingHeart.points}</span>
+          <span className="ev-flying-heart">❤</span>
+          <span className="ev-flying-num">{flyingBadge.points}</span>
         </div>
       )}
 
-      <div className="board-container" ref={tableRef}>
-        <div className="board-header">
-          <div className="header-title">EUROVISION SONG CONTEST</div>
-          <div className="header-year">SCOREBOARD</div>
+      <div className="ev-board">
+        <div className="ev-header">
+          <div className="ev-header-sub">EUROVISION SONG CONTEST</div>
+          <div className="ev-header-title">SCOREBOARD</div>
         </div>
 
-        <div className="board-columns">
-          <div className="board-col">
-            {leftCol.map(c => <CountryRow key={c.id} country={c} />)}
+        <div className="ev-columns">
+          <div className="ev-col">
+            {leftCol.map((c, i) => <CountryRow key={c.id} country={c} rank={i} />)}
           </div>
-          <div className="board-center">
-            <div className="center-heart">❤️</div>
+          <div className="ev-divider">
+            <div className="ev-heart-center">❤</div>
           </div>
-          <div className="board-col">
-            {rightCol.map(c => <CountryRow key={c.id} country={c} />)}
+          <div className="ev-col">
+            {rightCol.map((c, i) => <CountryRow key={c.id} country={c} rank={half + i} />)}
           </div>
         </div>
 
-        <div className="voter-bar">
-          <div ref={heartButtonRef} className="voter-votes">
+        <div className="ev-voter-bar">
+          <div className="ev-voter-hearts" ref={badgeSourceRef}>
             {remainingVotes.map((pts, i) => (
-              <span key={i} className={`vote-badge ${i === 0 ? "vote-next" : ""}`}>
-                <span className="vote-heart">❤️</span>
-                <span className="vote-num">{pts}</span>
-              </span>
+              <div key={i} className={`ev-heart-badge ${i === 0 ? "ev-heart-badge--next" : ""}`}>
+                <span className="ev-hb-heart">❤</span>
+                <span className="ev-hb-num">{pts}</span>
+              </div>
             ))}
+            {remainingVotes.length === 0 && (
+              <span className="ev-done-label">ГОЛОСОВАНИЕ ЗАВЕРШЕНО</span>
+            )}
           </div>
-          <div className="voter-flag">{FLAG_EMOJIS[currentVoter.name] || "🏳️"}</div>
-          <div className="voter-name">{currentVoter.name.toUpperCase()}</div>
-          {currentVoter.currentVoteIndex >= VOTE_ORDER.length && (
-            <div className="voter-done">ГОЛОСОВАНИЕ ЗАВЕРШЕНО</div>
-          )}
+          <div className="ev-voter-flag-wrap">
+            <span className="ev-voter-flag">{FLAG_EMOJIS[currentVoter.name] || "🏳️"}</span>
+          </div>
+          <div className="ev-voter-name">{currentVoter.name.toUpperCase()}</div>
         </div>
 
-        <div className="voter-switcher">
-          <span className="switcher-label">Голосует:</span>
-          <div className="switcher-list">
+        <div className="ev-switcher">
+          <span className="ev-switcher-label">Голосует:</span>
+          <div className="ev-switcher-flags">
             {voters.map(v => (
               <button
                 key={v.id}
-                onClick={() => setCurrentVoter(v)}
-                className={`switcher-btn ${v.id === currentVoter.id ? "active" : ""}`}
+                className={`ev-sflag ${v.id === currentVoter.id ? "ev-sflag--active" : ""}`}
+                onClick={() => switchVoter(v)}
                 title={v.name}
               >
                 {FLAG_EMOJIS[v.name] || "🏳️"}
+                {v.currentVoteIndex >= VOTE_ORDER.length && <span className="ev-sflag-done">✓</span>}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <button className="admin-btn" onClick={() => setShowAdmin(true)}>
-        ⚙️ Управление
+      <button className="ev-admin-btn" onClick={() => setShowAdmin(true)}>
+        ⚙ Управление
       </button>
 
       {showAdmin && (
@@ -255,13 +328,13 @@ export default function EurovisionBoard() {
           currentVoter={currentVoter}
           onClose={() => setShowAdmin(false)}
           onCountriesChange={setCountries}
-          onVotersChange={(v) => { setVoters(v); setCurrentVoter(v[0]); }}
+          onVotersChange={(v) => { setVoters(v); setCurrentVoter(v[0]); setPointBadges([]); }}
           onReset={() => {
-            const fresh = countries.map(c => ({ ...c, points: 0, receivedFrom: [] }));
-            const freshVoters = voters.map(v => ({ ...v, votesGiven: [], currentVoteIndex: 0 }));
-            setCountries(fresh);
-            setVoters(freshVoters);
-            setCurrentVoter(freshVoters[0]);
+            setCountries(makeCountries());
+            const fv = makeVoters();
+            setVoters(fv);
+            setCurrentVoter(fv[0]);
+            setPointBadges([]);
           }}
         />
       )}
