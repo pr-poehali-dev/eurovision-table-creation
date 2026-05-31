@@ -211,35 +211,90 @@ export default function EurovisionBoard() {
   const getBadge = (countryId: string) =>
     pointBadges.find(b => b.countryId === countryId);
 
-  const CountryRow = ({ country, rank }: { country: Country; rank: number }) => {
+  const HeartFlag = ({ name, badge, isTop3 }: { name: string; badge?: PointBadge; isTop3: boolean }) => (
+    <div className={`ev-heart-flag-wrap ${isTop3 ? "ev-heart-flag-wrap--wave" : ""}`}>
+      <svg viewBox="0 0 100 90" className="ev-heart-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id={`hclip-${name.replace(/\s/g, "")}`}>
+            <path d="M50 85 C50 85 5 55 5 28 C5 12 17 2 30 2 C38 2 45 7 50 13 C55 7 62 2 70 2 C83 2 95 12 95 28 C95 55 50 85 50 85Z" />
+          </clipPath>
+        </defs>
+        <path
+          d="M50 85 C50 85 5 55 5 28 C5 12 17 2 30 2 C38 2 45 7 50 13 C55 7 62 2 70 2 C83 2 95 12 95 28 C95 55 50 85 50 85Z"
+          fill={badge ? "rgba(180,10,0,0.92)" : "rgba(160,20,0,0.75)"}
+          stroke="rgba(255,140,80,0.5)"
+          strokeWidth="2"
+        />
+        <foreignObject
+          x="10" y="8" width="80" height="70"
+          clipPath={`url(#hclip-${name.replace(/\s/g, "")})`}
+        >
+          <div
+            style={{
+              width: "100%", height: "100%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "38px", lineHeight: 1,
+            }}
+          >
+            {badge
+              ? <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: "28px", fontWeight: 700, color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>{badge.points}</span>
+              : FLAG_EMOJIS[name] || "🏳️"
+            }
+          </div>
+        </foreignObject>
+        {!badge && (
+          <path
+            d="M50 85 C50 85 5 55 5 28 C5 12 17 2 30 2 C38 2 45 7 50 13 C55 7 62 2 70 2 C83 2 95 12 95 28 C95 55 50 85 50 85Z"
+            fill="none"
+            stroke="rgba(255,200,120,0.3)"
+            strokeWidth="1.5"
+          />
+        )}
+      </svg>
+    </div>
+  );
+
+  const CountryRow = ({ country, rank, side, arcIndex, arcTotal }: {
+    country: Country; rank: number; side: "left" | "right"; arcIndex: number; arcTotal: number;
+  }) => {
     const votable = canVoteFor(country.id);
     const isSelf = country.id === currentVoter.id;
     const badge = getBadge(country.id);
     const isTop3 = rank < 3 && country.points > 0;
     const isFlash = flashRowId === country.id;
 
+    const t = arcTotal <= 1 ? 0 : arcIndex / (arcTotal - 1);
+    const arc = Math.sin(t * Math.PI) * 38;
+    const indent = side === "left"
+      ? { marginLeft: `${arc}px`, marginRight: 0 }
+      : { marginRight: `${arc}px`, marginLeft: 0 };
+
     return (
       <div
         ref={el => { rowRefs.current[country.id] = el; }}
         className={[
           "ev-row",
+          `ev-row--${side}`,
           votable ? "ev-row--votable" : "",
           isSelf ? "ev-row--self" : "",
           isFlash ? "ev-row--flash" : "",
         ].join(" ")}
+        style={indent}
         onClick={() => votable && handleVote(country.id)}
       >
-        <div className={`ev-flag-wrap ${isTop3 ? "ev-flag-wrap--wave" : ""}`}>
-          {badge && (
-            <div className="ev-badge-on-flag">
-              <span className="ev-badge-heart">❤</span>
-              <span className="ev-badge-num">{badge.points}</span>
-            </div>
-          )}
-          <span className="ev-flag">{FLAG_EMOJIS[country.name] || "🏳️"}</span>
-        </div>
-        <span className="ev-name">{country.name.toUpperCase()}</span>
-        <span className="ev-points">{country.points}</span>
+        {side === "left" ? (
+          <>
+            <HeartFlag name={country.name} badge={badge} isTop3={isTop3} />
+            <span className="ev-name">{country.name.toUpperCase()}</span>
+            <span className="ev-points">{country.points}</span>
+          </>
+        ) : (
+          <>
+            <HeartFlag name={country.name} badge={badge} isTop3={isTop3} />
+            <span className="ev-name">{country.name.toUpperCase()}</span>
+            <span className="ev-points">{country.points}</span>
+          </>
+        )}
       </div>
     );
   };
@@ -270,14 +325,18 @@ export default function EurovisionBoard() {
         </div>
 
         <div className="ev-columns">
-          <div className="ev-col">
-            {leftCol.map((c, i) => <CountryRow key={c.id} country={c} rank={i} />)}
+          <div className="ev-col ev-col--left">
+            {leftCol.map((c, i) => (
+              <CountryRow key={c.id} country={c} rank={i} side="left" arcIndex={i} arcTotal={leftCol.length} />
+            ))}
           </div>
           <div className="ev-divider">
             <div className="ev-heart-center">❤</div>
           </div>
-          <div className="ev-col">
-            {rightCol.map((c, i) => <CountryRow key={c.id} country={c} rank={half + i} />)}
+          <div className="ev-col ev-col--right">
+            {rightCol.map((c, i) => (
+              <CountryRow key={c.id} country={c} rank={half + i} side="right" arcIndex={i} arcTotal={rightCol.length} />
+            ))}
           </div>
         </div>
 

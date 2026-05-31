@@ -198,6 +198,12 @@
 }
 
 /* ===================== ROW ===================== */
+.ev-col--left .ev-row,
+.ev-col--right .ev-row {
+  width: calc(100% - 40px);
+  max-width: 100%;
+}
+
 .ev-row {
   display: flex;
   align-items: center;
@@ -209,7 +215,7 @@
     rgba(235, 215, 175, 0.86) 100%
   );
   border-radius: 18px;
-  padding: 2px 10px 2px 2px;
+  padding: 1px 10px 1px 1px;
   cursor: default;
   border: 1px solid rgba(200, 170, 100, 0.35);
   box-shadow:
@@ -221,7 +227,6 @@
   transition:
     background 0.3s ease,
     box-shadow 0.3s ease,
-    transform 0.3s ease,
     opacity 0.3s ease;
 }
 
@@ -239,7 +244,7 @@
   box-shadow:
     0 4px 18px rgba(255, 200, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  transform: translateX(3px) scale(1.012);
+  transform: scale(1.018);
 }
 
 .ev-row--self {
@@ -259,42 +264,59 @@
   transform: scale(1.025) !important;
 }
 
-/* ===================== FLAG WRAP ===================== */
-.ev-flag-wrap {
+/* ===================== ARC COLUMNS ===================== */
+.ev-col--left {
+  align-items: flex-start;
+}
+.ev-col--right {
+  align-items: flex-end;
+}
+.ev-col--left .ev-row {
+  flex-direction: row;
+  align-self: flex-start;
+}
+.ev-col--right .ev-row {
+  flex-direction: row;
+  align-self: flex-end;
+}
+
+/* ===================== HEART FLAG ===================== */
+.ev-heart-flag-wrap {
   position: relative;
-  width: 30px;
-  height: 26px;
+  width: 36px;
+  height: 32px;
   flex-shrink: 0;
+  margin-right: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 5px;
 }
 
-.ev-flag {
-  font-size: 20px;
-  line-height: 1;
-  display: block;
+.ev-heart-svg {
+  width: 36px;
+  height: 32px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
 }
 
-.ev-flag-wrap--wave .ev-flag {
-  animation: ev-wave 2.5s ease-in-out infinite;
+.ev-heart-flag-wrap--wave .ev-heart-svg {
+  animation: ev-wave 2.4s ease-in-out infinite;
   transform-origin: bottom center;
 }
 
 @keyframes ev-wave {
   0%,
   100% {
-    transform: rotate(-4deg) scale(1);
+    transform: rotate(-5deg) scale(1);
   }
   25% {
-    transform: rotate(4deg) scale(1.08);
+    transform: rotate(5deg) scale(1.1);
   }
   50% {
-    transform: rotate(-3deg) scale(1.04);
+    transform: rotate(-3deg) scale(1.05);
   }
   75% {
-    transform: rotate(3deg) scale(1.08);
+    transform: rotate(4deg) scale(1.1);
   }
 }
 
