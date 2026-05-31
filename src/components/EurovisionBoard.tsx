@@ -3,6 +3,23 @@ import AdminPanel from "./AdminPanel";
 
 const VOTE_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12];
 
+// ISO 3166-1 alpha-2 codes for flag images via flagcdn.com
+export const FLAG_CODES: Record<string, string> = {
+  "Albania": "al", "Andorra": "ad", "Armenia": "am", "Australia": "au",
+  "Austria": "at", "Azerbaijan": "az", "Belarus": "by", "Belgium": "be",
+  "Bosnia": "ba", "Bulgaria": "bg", "Croatia": "hr", "Cyprus": "cy",
+  "Czech Republic": "cz", "Denmark": "dk", "Estonia": "ee", "Finland": "fi",
+  "France": "fr", "Georgia": "ge", "Germany": "de", "Greece": "gr",
+  "Hungary": "hu", "Iceland": "is", "Ireland": "ie", "Israel": "il",
+  "Italy": "it", "Latvia": "lv", "Lithuania": "lt", "Luxembourg": "lu",
+  "Malta": "mt", "Moldova": "md", "Montenegro": "me", "Netherlands": "nl",
+  "North Macedonia": "mk", "Norway": "no", "Poland": "pl", "Portugal": "pt",
+  "Romania": "ro", "Russia": "ru", "San Marino": "sm", "Serbia": "rs",
+  "Slovakia": "sk", "Slovenia": "si", "Spain": "es", "Sweden": "se",
+  "Switzerland": "ch", "Turkey": "tr", "Ukraine": "ua", "United Kingdom": "gb",
+};
+
+// Fallback emoji (used only in voter switcher bar)
 export const FLAG_EMOJIS: Record<string, string> = {
   "Albania": "🇦🇱", "Andorra": "🇦🇩", "Armenia": "🇦🇲", "Australia": "🇦🇺",
   "Austria": "🇦🇹", "Azerbaijan": "🇦🇿", "Belarus": "🇧🇾", "Belgium": "🇧🇪",
@@ -16,6 +33,11 @@ export const FLAG_EMOJIS: Record<string, string> = {
   "Romania": "🇷🇴", "Russia": "🇷🇺", "San Marino": "🇸🇲", "Serbia": "🇷🇸",
   "Slovakia": "🇸🇰", "Slovenia": "🇸🇮", "Spain": "🇪🇸", "Sweden": "🇸🇪",
   "Switzerland": "🇨🇭", "Turkey": "🇹🇷", "Ukraine": "🇺🇦", "United Kingdom": "🇬🇧",
+};
+
+const flagUrl = (name: string) => {
+  const code = FLAG_CODES[name];
+  return code ? `https://flagcdn.com/w80/${code}.png` : null;
 };
 
 export interface Country {
@@ -211,48 +233,65 @@ export default function EurovisionBoard() {
   const getBadge = (countryId: string) =>
     pointBadges.find(b => b.countryId === countryId);
 
-  const HeartFlag = ({ name, badge, isTop3 }: { name: string; badge?: PointBadge; isTop3: boolean }) => (
-    <div className={`ev-heart-flag-wrap ${isTop3 ? "ev-heart-flag-wrap--wave" : ""}`}>
-      <svg viewBox="0 0 100 90" className="ev-heart-svg" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <clipPath id={`hclip-${name.replace(/\s/g, "")}`}>
-            <path d="M50 85 C50 85 5 55 5 28 C5 12 17 2 30 2 C38 2 45 7 50 13 C55 7 62 2 70 2 C83 2 95 12 95 28 C95 55 50 85 50 85Z" />
-          </clipPath>
-        </defs>
-        <path
-          d="M50 85 C50 85 5 55 5 28 C5 12 17 2 30 2 C38 2 45 7 50 13 C55 7 62 2 70 2 C83 2 95 12 95 28 C95 55 50 85 50 85Z"
-          fill={badge ? "rgba(180,10,0,0.92)" : "rgba(160,20,0,0.75)"}
-          stroke="rgba(255,140,80,0.5)"
-          strokeWidth="2"
-        />
-        <foreignObject
-          x="10" y="8" width="80" height="70"
-          clipPath={`url(#hclip-${name.replace(/\s/g, "")})`}
-        >
-          <div
-            style={{
-              width: "100%", height: "100%",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "38px", lineHeight: 1,
-            }}
-          >
-            {badge
-              ? <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: "28px", fontWeight: 700, color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>{badge.points}</span>
-              : FLAG_EMOJIS[name] || "🏳️"
-            }
-          </div>
-        </foreignObject>
-        {!badge && (
-          <path
-            d="M50 85 C50 85 5 55 5 28 C5 12 17 2 30 2 C38 2 45 7 50 13 C55 7 62 2 70 2 C83 2 95 12 95 28 C95 55 50 85 50 85Z"
-            fill="none"
-            stroke="rgba(255,200,120,0.3)"
-            strokeWidth="1.5"
-          />
-        )}
-      </svg>
-    </div>
-  );
+  const HeartFlag = ({ name, badge, isTop3 }: { name: string; badge?: PointBadge; isTop3: boolean }) => {
+    const url = flagUrl(name);
+    const clipId = `hclip-${name.replace(/[\s&]/g, "")}`;
+    const heartPath = "M50 84 C50 84 4 54 4 27 C4 11 16 1 29 1 C37 1 44 6 50 13 C56 6 63 1 71 1 C84 1 96 11 96 27 C96 54 50 84 50 84Z";
+
+    return (
+      <div className={`ev-heart-flag-wrap ${isTop3 ? "ev-heart-flag-wrap--wave" : ""}`}>
+        <svg viewBox="0 0 100 90" className="ev-heart-svg" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <clipPath id={clipId}>
+              <path d={heartPath} />
+            </clipPath>
+          </defs>
+
+          {/* Shadow base */}
+          <path d={heartPath} fill="rgba(0,0,0,0.35)" transform="translate(0,3)" />
+
+          {badge ? (
+            /* Show points number on red heart when voted */
+            <>
+              <path d={heartPath} fill="rgba(190,8,0,0.95)" stroke="rgba(255,120,80,0.6)" strokeWidth="2" />
+              <text
+                x="50" y="56"
+                textAnchor="middle"
+                fontFamily="'Oswald', sans-serif"
+                fontSize="34"
+                fontWeight="700"
+                fill="#ffffff"
+                style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.9))" }}
+              >
+                {badge.points}
+              </text>
+            </>
+          ) : url ? (
+            /* Real flag image clipped to heart shape */
+            <>
+              <image
+                href={url}
+                x="-5" y="2"
+                width="110" height="80"
+                clipPath={`url(#${clipId})`}
+                preserveAspectRatio="xMidYMid slice"
+              />
+              {/* Heart border overlay */}
+              <path d={heartPath} fill="none" stroke="rgba(255,210,140,0.55)" strokeWidth="2.5" />
+              {/* Subtle gloss */}
+              <path
+                d="M28 6 C35 2 44 1 50 13 C44 2 32 2 24 10 Z"
+                fill="rgba(255,255,255,0.18)"
+              />
+            </>
+          ) : (
+            /* Fallback: dark heart */
+            <path d={heartPath} fill="rgba(140,15,0,0.8)" stroke="rgba(255,150,80,0.5)" strokeWidth="2" />
+          )}
+        </svg>
+      </div>
+    );
+  };
 
   const CountryRow = ({ country, rank, side, arcIndex, arcTotal }: {
     country: Country; rank: number; side: "left" | "right"; arcIndex: number; arcTotal: number;
